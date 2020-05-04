@@ -2,6 +2,7 @@
 using System.Linq;
 using Assets.Scripts.Factories;
 using Assets.Scripts.GamePlay;
+using PathCreation;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -11,11 +12,15 @@ public class EnemyWave
 {
     public EnemyMode Mode = EnemyMode.Default;
     public int EnemyCount = 3;
+    public float Delay = 2;
     public GameObject Path;
-    public bool Inverted;
     public EnemyType EnemyType = EnemyType.SpaceShip1;
+    public bool IsInverted;
+    public EndOfPathInstruction EndOfPathMode = EndOfPathInstruction.Reverse;
     public bool HasPowerUp;
-    public PowerUpType PowerUp;
+    public PowerUpType PowerUp = PowerUpType.Shooting;
+
+    public EnemyModeOptions ToEnemyMode() => new EnemyModeOptions(Mode, Path, EndOfPathMode);
 }
 
 public class GameManager : MonoBehaviour

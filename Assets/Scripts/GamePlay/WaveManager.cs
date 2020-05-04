@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Assets.Scripts.Factories;
+using PathCreation;
+using PathCreation.Utility;
 using UnityEngine;
 
 namespace Assets.Scripts.GamePlay
@@ -25,7 +27,6 @@ namespace Assets.Scripts.GamePlay
             _defaultSpawnPoint = defaultSpawnPoint;
 
             _currentWave = new CurrentWave(0, _waves.First());
-            LoadPaths();
         }
 
         // public
@@ -33,6 +34,7 @@ namespace Assets.Scripts.GamePlay
         {
             if (Ended) return;
             if (_currentWave.IsFullyCreated) return;
+            if (_currentWave.Delaying) return;
 
             var enemyGO = CreateEnemy();
             if (enemyGO != null)
@@ -54,17 +56,9 @@ namespace Assets.Scripts.GamePlay
         }
 
         // helper
-        private void LoadPaths()
-        {
-            //foreach (var wave in _waves.Where(w => w.Type == EnemyMovementType.Path))
-            //{
-            //    wave.Path = GameObject.Instantiate(wave.Path, wave.Path.GetComponent<PathCreator>().bezierPath.GetPoint(0), Quaternion.identity);
-            //}
-        }
-
         private void SetMovementMode(Enemy enemy)
         {
-            enemy.Spawn(_difficultyManager.Difficulty, CurrentWave.Definition.Mode, CurrentWave.Definition.Path);
+            enemy.Spawn(_difficultyManager.Difficulty, CurrentWave.Definition.ToEnemyMode());
         }
 
         private GameObject CreateEnemy()
@@ -82,17 +76,45 @@ namespace Assets.Scripts.GamePlay
     internal class CurrentWave
     {
         private readonly List<Enemy> _enemies = new List<Enemy>();
+        private readonly float _creationTime = Time.time;
 
         public int Index { get; }
         public int EnemiesCreated { get; private set; }
         public bool IsFullyCreated => EnemiesCreated >= Definition.EnemyCount;
         public bool Ended => IsFullyCreated && _enemies.All(e => e?.Destroyed ?? true);
+        public bool Delaying => _creationTime + Definition.Delay > Time.time;
         public EnemyWave Definition { get; }
 
         public CurrentWave(int index, EnemyWave definition)
         {
             Index = index;
             Definition = definition;
+
+            if (definition.IsInverted)
+                InvertPath();
+        }
+
+        private void InvertPath()
+        {
+            // TODO: Improve to dont create many multiple inverted paths unecessarily
+
+            var invertedPath = GameObject.Instantiate(Definition.Path);
+            var creator = invertedPath.GetComponent<PathCreator>();
+
+            var totalPoints = creator.bezierPath.NumPoints;
+            var points = totalPoints / 2;
+            for (int i = 0; i < points; i++)
+            {
+                var i2 = totalPoints - i - 1;
+                var pt1 = creator.bezierPath[i];
+                var pt2 = creator.bezierPath[i2];
+
+                creator.bezierPath.SetPoint(i, pt2, true);
+                creator.bezierPath.SetPoint(i2, pt1, true);
+            }
+            creator.bezierPath.NotifyPathModified();
+
+            Definition.Path = invertedPath;
         }
 
         public void AddEnemyCreate(Enemy enemy)

@@ -1,4 +1,5 @@
 ﻿using Assets.Scripts.GamePlay;
+using PathCreation;
 using UnityEngine;
 
 public class SpaceShipEnemy : Enemy
@@ -44,15 +45,15 @@ public class SpaceShipEnemy : Enemy
         _nextShootTime = Time.time + 1f / ShootRate;
     }
 
-    public override void Spawn(DifficultyLevel difficulty, EnemyMode mode = EnemyMode.Default, GameObject path = null)
+    public override void Spawn(DifficultyLevel difficulty, EnemyModeOptions mode)
     {
-        base.Spawn(difficulty, mode, path);
+        base.Spawn(difficulty, mode);
         //transform.localPosition =  transform.EnsurePositionInScreenBoundaries(transform.position);
 
         ShootRate = difficulty == DifficultyLevel.Easy ? 0.5f :
                     difficulty == DifficultyLevel.Normal ? ShootRate : 3;
 
-        if (mode == EnemyMode.Path)
+        if (mode.IsValidPathMode)
         {
             Speed *= 2;
         }
