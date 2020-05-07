@@ -2,7 +2,6 @@
 using System.Linq;
 using Assets.Scripts.Factories;
 using PathCreation;
-using PathCreation.Utility;
 using UnityEngine;
 
 namespace Assets.Scripts.GamePlay
@@ -36,12 +35,19 @@ namespace Assets.Scripts.GamePlay
             if (_currentWave.IsFullyCreated) return;
             if (_currentWave.Delaying) return;
 
-            var enemyGO = CreateEnemy();
-            if (enemyGO != null)
+            // handle all wave sets
+            foreach (var set in _currentWave.Definition.Sets)
             {
-                var enemy = enemyGO.GetComponent<Enemy>();
-                SetMovementMode(enemy);
-                _currentWave.AddEnemyCreate(enemy);
+                if (_currentWave.IsSetFullyCreated(set))
+                    continue;
+
+                var enemyGO = CreateEnemy(set);
+                if (enemyGO != null)
+                {
+                    var enemy = enemyGO.GetComponent<Enemy>();
+                    SetMovementMode(enemy, set);
+                    _currentWave.AddEnemyCreate(enemy, set);
+                }
             }
         }
 
@@ -56,18 +62,18 @@ namespace Assets.Scripts.GamePlay
         }
 
         // helper
-        private void SetMovementMode(Enemy enemy)
+        private void SetMovementMode(Enemy enemy, EnemyWaveSet set)
         {
-            enemy.Spawn(_difficultyManager.Difficulty, CurrentWave.Definition.ToEnemyMode());
+            enemy.Spawn(_difficultyManager.Difficulty, set.ToEnemyMode());
         }
 
-        private GameObject CreateEnemy()
+        private GameObject CreateEnemy(EnemyWaveSet set)
         {
-            if (_difficultyManager.CanCreateEnemy(_currentWave.Definition.Mode))
+            if (_difficultyManager.CanCreateEnemy(set.Mode))
             {
-                _difficultyManager.NotifyEnemyTypeSelected(_currentWave.Definition.EnemyType);
+                _difficultyManager.NotifyEnemyTypeSelected(set.EnemyType, set.Mode);
                 var position = ScreenHelper.GetRandomScreenPoint(y: _defaultSpawnPoint.transform.position.y);
-                return _enemyFactory.Create(_currentWave.Definition.EnemyType, position);
+                return _enemyFactory.Create(set.EnemyType, position);
             }
             return null;
         }
@@ -75,13 +81,14 @@ namespace Assets.Scripts.GamePlay
 
     internal class CurrentWave
     {
-        private readonly List<Enemy> _enemies = new List<Enemy>();
+        private readonly Dictionary<EnemyWaveSet, List<Enemy>> _enemies = new Dictionary<EnemyWaveSet, List<Enemy>>();
         private readonly float _creationTime = Time.time;
+        private readonly int _totalEnemies;
 
         public int Index { get; }
         public int EnemiesCreated { get; private set; }
-        public bool IsFullyCreated => EnemiesCreated >= Definition.EnemyCount;
-        public bool Ended => IsFullyCreated && _enemies.All(e => e?.Destroyed ?? true);
+        public bool IsFullyCreated => EnemiesCreated >= _totalEnemies;
+        public bool Ended => IsFullyCreated && _enemies.All(kv => kv.Value.All(e => e?.Destroyed ?? true));
         public bool Delaying => _creationTime + Definition.Delay > Time.time;
         public EnemyWave Definition { get; }
 
@@ -90,15 +97,23 @@ namespace Assets.Scripts.GamePlay
             Index = index;
             Definition = definition;
 
-            if (definition.IsInverted)
-                InvertPath();
+            _totalEnemies = definition.Sets.Sum(s => s.EnemyCount);
+
+            foreach (var set in Definition.Sets)
+            {
+                if (set.IsInverted)
+                    InvertPath(set);
+            }
         }
 
-        private void InvertPath()
+        public bool IsSetFullyCreated(EnemyWaveSet set) => _enemies.ContainsKey(set) && _enemies[set].Count >= set.EnemyCount;
+
+
+        private void InvertPath(EnemyWaveSet set)
         {
             // TODO: Improve to dont create many multiple inverted paths unecessarily
 
-            var invertedPath = GameObject.Instantiate(Definition.Path);
+            var invertedPath = GameObject.Instantiate(set.Path);
             var creator = invertedPath.GetComponent<PathCreator>();
 
             var totalPoints = creator.bezierPath.NumPoints;
@@ -114,13 +129,17 @@ namespace Assets.Scripts.GamePlay
             }
             creator.bezierPath.NotifyPathModified();
 
-            Definition.Path = invertedPath;
+            set.Path = invertedPath;
         }
 
-        public void AddEnemyCreate(Enemy enemy)
+        public void AddEnemyCreate(Enemy enemy, EnemyWaveSet set)
         {
             EnemiesCreated++;
-            _enemies.Add(enemy);
+
+            if (!_enemies.ContainsKey(set))
+                _enemies.Add(set, new List<Enemy>());
+
+            _enemies[set].Add(enemy);
         }
     }
 }

@@ -655,60 +655,96 @@ MonoBehaviour:
   - {fileID: 2060554010327579455, guid: 2c0c215f07e22f94c8c66ea670e04cf2, type: 3}
   - {fileID: 2060554010327579455, guid: 13fd2ed3072c9f148817c11d7be85d63, type: 3}
   EnemyWaves:
-  - Mode: 0
-    EnemyCount: 3
+  - Sets:
+    - Mode: 0
+      EnemyType: 1
+      EnemyCount: 3
+      Path: {fileID: 0}
+      IsInverted: 0
+      EndOfPathMode: 0
     Delay: 0
-    Path: {fileID: 0}
-    EnemyType: 1
-    IsInverted: 0
-    EndOfPathMode: 0
     HasPowerUp: 1
     PowerUp: 0
-  - Mode: 1
-    EnemyCount: 3
+  - Sets:
+    - Mode: 1
+      EnemyType: 2
+      EnemyCount: 3
+      Path: {fileID: 1289490514}
+      IsInverted: 0
+      EndOfPathMode: 0
     Delay: 2
-    Path: {fileID: 272917399}
-    EnemyType: 2
-    IsInverted: 0
-    EndOfPathMode: 1
+    HasPowerUp: 1
+    PowerUp: 2
+  - Sets:
+    - Mode: 1
+      EnemyType: 3
+      EnemyCount: 3
+      Path: {fileID: 272917399}
+      IsInverted: 0
+      EndOfPathMode: 1
+    - Mode: 1
+      EnemyType: 1
+      EnemyCount: 4
+      Path: {fileID: 1289490514}
+      IsInverted: 1
+      EndOfPathMode: 1
+    Delay: 2
+    HasPowerUp: 1
+    PowerUp: 0
+  - Sets:
+    - Mode: 1
+      EnemyType: 2
+      EnemyCount: 6
+      Path: {fileID: 1623251634}
+      IsInverted: 0
+      EndOfPathMode: 0
+    Delay: 2
     HasPowerUp: 1
     PowerUp: 1
-  - Mode: 1
-    EnemyCount: 4
-    Delay: 2
-    Path: {fileID: 1317130757}
-    EnemyType: 3
-    IsInverted: 0
-    EndOfPathMode: 1
+  - Sets:
+    - Mode: 1
+      EnemyType: 2
+      EnemyCount: 3
+      Path: {fileID: 1317130757}
+      IsInverted: 0
+      EndOfPathMode: 1
+    - Mode: 1
+      EnemyType: 2
+      EnemyCount: 3
+      Path: {fileID: 1317130757}
+      IsInverted: 1
+      EndOfPathMode: 1
+    - Mode: 1
+      EnemyType: 1
+      EnemyCount: 4
+      Path: {fileID: 272917399}
+      IsInverted: 0
+      EndOfPathMode: 1
+    Delay: 0
     HasPowerUp: 1
     PowerUp: 0
-  - Mode: 1
-    EnemyCount: 5
+  - Sets:
+    - Mode: 1
+      EnemyType: 2
+      EnemyCount: 4
+      Path: {fileID: 2134246679}
+      IsInverted: 0
+      EndOfPathMode: 1
+    - Mode: 1
+      EnemyType: 3
+      EnemyCount: 4
+      Path: {fileID: 2134246679}
+      IsInverted: 1
+      EndOfPathMode: 1
+    - Mode: 0
+      EnemyType: 1
+      EnemyCount: 5
+      Path: {fileID: 0}
+      IsInverted: 0
+      EndOfPathMode: 0
     Delay: 2
-    Path: {fileID: 1289490514}
-    EnemyType: 1
-    IsInverted: 0
-    EndOfPathMode: 1
-    HasPowerUp: 0
-    PowerUp: 0
-  - Mode: 1
-    EnemyCount: 6
-    Delay: 0
-    Path: {fileID: 2134246679}
-    EnemyType: 2
-    IsInverted: 0
-    EndOfPathMode: 1
-    HasPowerUp: 0
-    PowerUp: 0
-  - Mode: 1
-    EnemyCount: 5
-    Delay: 0
-    Path: {fileID: 1623251634}
-    EnemyType: 3
-    IsInverted: 0
-    EndOfPathMode: 0
-    HasPowerUp: 0
-    PowerUp: 0
+    HasPowerUp: 1
+    PowerUp: 2
   ScoreText: {fileID: 1048885507}
   ShieldText: {fileID: 449050619}
   HealthText: {fileID: 110638443}

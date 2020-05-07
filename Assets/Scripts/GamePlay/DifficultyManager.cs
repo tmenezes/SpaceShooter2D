@@ -30,7 +30,8 @@ namespace Assets.Scripts.GamePlay
             Difficulty = difficulty;
         }
 
-        public bool CanCreateEnemy(EnemyMode mode = EnemyMode.Default) => Time.time - _lastCreationTime >= GetCreationTimeRate(mode);
+        //public bool CanCreateEnemy() => Time.time - _lastCreationTime >= GetCreationTimeRate(mode);
+        public bool CanCreateEnemy(EnemyMode mode) => Time.time - _lastCreationTime >= GetCreationTimeRate(mode);
 
         public bool CanCreateAsteroid() => Time.time - _asteroidLastCreationTime >= _asteroidsCreationRate[Difficulty];
 
@@ -42,7 +43,7 @@ namespace Assets.Scripts.GamePlay
             return _availableTypes[rndIndex];
         }
 
-        public void NotifyEnemyTypeSelected(EnemyType type)
+        public void NotifyEnemyTypeSelected(EnemyType type, EnemyMode mode = EnemyMode.Default)
         {
             if (type == EnemyType.Asteroid1)
                 _asteroidLastCreationTime = Time.time;

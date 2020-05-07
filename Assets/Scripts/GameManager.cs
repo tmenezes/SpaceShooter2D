@@ -10,17 +10,24 @@ using UnityEngine.UI;
 [Serializable]
 public class EnemyWave
 {
-    public EnemyMode Mode = EnemyMode.Default;
-    public int EnemyCount = 3;
+    public EnemyWaveSet[] Sets;
     public float Delay = 2;
-    public GameObject Path;
-    public EnemyType EnemyType = EnemyType.SpaceShip1;
-    public bool IsInverted;
-    public EndOfPathInstruction EndOfPathMode = EndOfPathInstruction.Reverse;
     public bool HasPowerUp;
     public PowerUpType PowerUp = PowerUpType.Shooting;
+}
+
+[Serializable]
+public class EnemyWaveSet
+{
+    public EnemyMode Mode = EnemyMode.Default;
+    public EnemyType EnemyType = EnemyType.SpaceShip1;
+    public int EnemyCount = 3;
+    public GameObject Path;
+    public bool IsInverted;
+    public EndOfPathInstruction EndOfPathMode = EndOfPathInstruction.Reverse;
 
     public EnemyModeOptions ToEnemyMode() => new EnemyModeOptions(Mode, Path, EndOfPathMode);
+
 }
 
 public class GameManager : MonoBehaviour

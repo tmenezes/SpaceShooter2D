@@ -60,9 +60,9 @@ public class EnemyModeOptions
     public EnemyModeOptions(EnemyMode mode, GameObject path, EndOfPathInstruction endOfPathMode)
     {
         Mode = mode;
-        Path = path?.GetComponent<PathCreator>();
+        Path = path != null ? path.GetComponent<PathCreator>() : null;
         EndOfPathMode = endOfPathMode;
     }
 
-    public static  EnemyModeOptions Default => new EnemyModeOptions(EnemyMode.Default, null, EndOfPathInstruction.Stop);
+    public static EnemyModeOptions Default => new EnemyModeOptions(EnemyMode.Default, null, EndOfPathInstruction.Stop);
 }

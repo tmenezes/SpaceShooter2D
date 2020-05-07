@@ -42,7 +42,7 @@ public class SpaceShipEnemy : Enemy
         bullet.GetComponent<BulletController>().SetAsEnemyBullet();
         _bulletAudio.Play();
 
-        _nextShootTime = Time.time + 1f / ShootRate;
+        _nextShootTime = Time.time + (1f / ShootRate) + Random.Range(0f, 0.5f); // add some randomness time while shooting
     }
 
     public override void Spawn(DifficultyLevel difficulty, EnemyModeOptions mode)
